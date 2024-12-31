@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,10 +25,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     AppCompatButton button;
-    TextView id,title,message;
+    TextView id,iduser,title,message;
     Gson gson;
     MessageModule messageModule = new MessageModule();
     String json;
+    int dem=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,29 +47,33 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Tạo Retrofit instance
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://tranghome.duckdns.org/api/node-red/")
-                        .addConverterFactory(GsonConverterFactory.create())
+                        .baseUrl("https://jsonplaceholder.typicode.com/posts/") // URL chính xác của API
+                        .addConverterFactory(GsonConverterFactory.create()) // Dùng Gson để parse JSON
                         .build();
 
+                // Tạo service từ Retrofit
                 Api apiService = retrofit.create(Api.class);
-                Call<String> call = apiService.getJsonData();
 
-                call.enqueue(new Callback<String>() {
+                // Gọi API - Lấy danh sách MessageModule
+                Call<List<MessageModule>> call = apiService.getJsonData(); // Sửa Call<List<MessageModule>>
+
+                // Thực hiện enqueue
+                call.enqueue(new Callback<List<MessageModule>>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(Call<List<MessageModule>> call, Response<List<MessageModule>> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            String jsonResponse = response.body();
-                            System.out.println("JSON: " + jsonResponse);
-                            Log.d("json",jsonResponse);
-                            // Chuyển đổi JSON thành MessageModule
-                            messageModule = gson.fromJson(jsonResponse, MessageModule.class);
+                            List<MessageModule> messageList = response.body();
 
-                            // Cập nhật giao diện
-                            if (messageModule != null) {
-                                id.setText(messageModule.id);
-                                title.setText(messageModule.title);
-                                message.setText(messageModule.message);
+                            // Hiển thị dữ liệu phần tử đầu tiên nếu danh sách không rỗng
+                            if (!messageList.isEmpty()) {
+                                MessageModule messageModule = messageList.get(dem); // Lấy bài viết đầu tiên
+                                id.setText(String.valueOf(messageModule.getId()));
+                                iduser.setText(String.valueOf(messageModule.getUserId()));
+                                title.setText(messageModule.getTitle());
+                                message.setText(messageModule.getBody());
+                                dem++;
                             }
                         } else {
                             System.err.println("Response is empty or unsuccessful");
@@ -74,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(Call<List<MessageModule>> call, Throwable t) {
                         System.err.println("Error: " + t.getMessage());
                     }
                 });
@@ -82,11 +89,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void anhXa() {
+        private void anhXa() {
         button = findViewById(R.id.button);
         id = findViewById(R.id.id1);
         title = findViewById(R.id.title1);
         message = findViewById(R.id.message1);
+        iduser = findViewById(R.id.iduser1);
     }
 
 }

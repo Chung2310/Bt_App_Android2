@@ -1,14 +1,24 @@
 package vn.edu.chungxangla.bt_app_android2;
 
 public class MessageModule {
-    String id;
-    String title,message;
+    private int id;
+    private int userId;
+    private String title;
+    private String body;
 
-    public String getId() {
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -20,11 +30,11 @@ public class MessageModule {
         this.title = title;
     }
 
-    public String getMessage() {
-        return message;
+    public String getBody() {
+        return body;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setBody(String body) {
+        this.body = body;
     }
 }
