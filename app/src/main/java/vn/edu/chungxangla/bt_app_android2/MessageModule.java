@@ -6,6 +6,16 @@ public class MessageModule {
     private String title;
     private String body;
 
+    public MessageModule(int id, int uid, String td, String bd){
+        this.id=id;
+        this.userId=uid;
+        this.title=td;
+        this.body=bd;
+    }
+    public MessageModule(){
+
+    }
+
     public int getUserId() {
         return userId;
     }
